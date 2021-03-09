@@ -26,12 +26,6 @@ Adafruit_BME280 bme; //I2C
 #define TZ 0      //(utc+)TZinhours
 #define DST_MN 60 //use 60mn for summer time in some countries
 
-//Setup
-const int UPDATE_INTERVAL_SECS = 10 * 60; // Update every 20 minutes
-unsigned long delayTime;
-const char *INFLUXDB_URL = "http://raspberrypi.fritz.box:8086";
-const char *INFLUXDB_DB_NAME = "homeautomation";
-
 //Display Settings
 const int I2C_DISPLAY_ADDRESS = 0x3c;
 
@@ -224,6 +218,8 @@ String currentTime()
 
 void uploadMetric(float temperature, float humanity, float pressure)
 {
+  const char *INFLUXDB_URL = "http://raspberrypi.fritz.box:8086";
+  const char *INFLUXDB_DB_NAME = "homeautomation";
   InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB_NAME);
 
   // Define data point with measurement name 'device_status`
