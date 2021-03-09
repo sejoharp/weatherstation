@@ -77,7 +77,6 @@ void setup()
   Serial.println();
 
   display.init();
-
   display.clear();
   display.display();
   display.flipScreenVertically();
@@ -94,7 +93,6 @@ void setup()
 
 void loop()
 {
-  Serial.println("");
   drawBME(&display);
   int updateInterval = 1000L * 55;
   delay(updateInterval);
@@ -129,7 +127,7 @@ void initWifiAutoConnect()
 
   displayText("Connecting to WiFi.. wifi config: http://192.168.4.1");
 
-  // wifiManager.resetSettings();
+  // wifiManager.resetSettings(); # reset wifi credentials
   wifiManager.autoConnect("weatherstation", "chaos radio express");
 
   displayText("Connected to WiFi");
@@ -150,6 +148,7 @@ void drawBME(OLEDDisplay *display)
   display->setFont(ArialMT_Plain_16);
   String humanityString = "Hum:" + String(humanity) + "%";
   display->drawString(0, 0, humanityString);
+  Serial.println("");
   Serial.println(humanityString);
 
   String temperatureString = "Temp:" + String(temperature) + "°C";
