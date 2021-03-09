@@ -64,7 +64,6 @@ OLEDDisplayUi ui(&display);
 #define DST_SEC ((DST_MN)*60)
 
 void drawBME(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y);
-void setupDone(OLEDDisplay *display);
 void drawBME(OLEDDisplay *display);
 void initWifiAutoConnect();
 void initBme280();
@@ -90,8 +89,7 @@ void setup()
 
   configTime(TZ_SEC, DST_SEC, "pool.ntp.org");
 
-  setupDone(&display);
-  delay(1000);
+  displayText("setup done!");
 }
 
 void loop()
@@ -100,26 +98,6 @@ void loop()
   drawBME(&display);
   int updateInterval = 1000L * 55;
   delay(updateInterval);
-}
-
-void initBme(OLEDDisplay *display)
-{
-  display->clear();
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(64, 10, "init bme280...");
-  display->display();
-  display->flipScreenVertically();
-}
-
-void setupDone(OLEDDisplay *display)
-{
-  display->clear();
-  display->setTextAlignment(TEXT_ALIGN_CENTER);
-  display->setFont(ArialMT_Plain_10);
-  display->drawString(64, 10, "Done...");
-  display->display();
-  display->flipScreenVertically();
 }
 
 void displayText(String text)
@@ -136,34 +114,20 @@ void displayText(String text)
 
 void initBme280()
 {
-  Serial.println("BME280 test");
-  Serial.println("");
+  displayText("BME280 test");
 
-  int counter = 0;
   while (bme.begin(0x76) == false)
   {
-    Serial.println("Could not find a valid dBME280 sensor,check wiring!");
-
-    display.clear();
-    display.setFont(ArialMT_Plain_10);
-    display.setTextAlignment(TEXT_ALIGN_CENTER);
-    display.drawString(64, 10, "initializing bme280");
-    display.drawXbm(40, 30, 8, 8, counter % 3 == 0 ? activeSymbole : inactiveSymbole);
-    display.drawXbm(54, 30, 8, 8, counter % 3 == 1 ? activeSymbole : inactiveSymbole);
-    display.drawXbm(68, 30, 8, 8, counter % 3 == 2 ? activeSymbole : inactiveSymbole);
-    display.display();
-    display.flipScreenVertically();
-    counter++;
-    delay(1000);
+    displayText("Could not find a valid dBME280 sensor,check wiring!");
+    displayText("initializing bme280..");
   }
-  Serial.println("--DefaultTest--");
 }
 
 void initWifiAutoConnect()
 {
   WiFiManager wifiManager;
 
-  displayText("Connecting to WiFi webserver:192.168.4.1");
+  displayText("Connecting to WiFi.. wifi config: http://192.168.4.1");
 
   // wifiManager.resetSettings();
   wifiManager.autoConnect("weatherstation", "chaos radio express");
@@ -180,27 +144,27 @@ void drawBME(OLEDDisplay *display)
   uploadMetric(temperature, humanity, pressure);
 
   String time = currentTime();
-  Serial.println("temperature: " + String(temperature));
-  Serial.println("pressure: " + String(pressure));
-  Serial.println("humidity: " + String(humanity));
-  Serial.println("time: " + time);
-  Serial.println("-----------------------");
 
   display->clear();
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(ArialMT_Plain_16);
-  String humi = "Hum:" + String(humanity) + "%";
-  display->drawString(0, 0, humi);
+  String humanityString = "Hum:" + String(humanity) + "%";
+  display->drawString(0, 0, humanityString);
+  Serial.println(humanityString);
 
-  String temp = "Temp:" + String(temperature) + "°C";
-  display->drawString(0, 15, temp);
+  String temperatureString = "Temp:" + String(temperature) + "°C";
+  display->drawString(0, 15, temperatureString);
+  Serial.println(temperatureString);
 
-  String pres = "Pres:" + String(pressure) + "hPa";
-  display->drawString(0, 30, pres);
+  String pressureString = "Pres:" + String(pressure) + "hPa";
+  display->drawString(0, 30, pressureString);
+  Serial.println(pressureString);
 
   display->drawHorizontalLine(0, 48, 128);
 
   display->drawString(0, 49, "Time:" + time);
+  Serial.println("time: " + time);
+  Serial.println("-----------------------");
 
   display->display();
   display->flipScreenVertically();
